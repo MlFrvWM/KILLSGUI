@@ -197,13 +197,19 @@ Player:AddButton("Show Kills Gui", function()
 	if killsGuiRunning then return end
 	killsGuiRunning = true
 
+	local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
+	if not playerGui then
+		repeat task.wait() until LocalPlayer:FindFirstChild("PlayerGui")
+		playerGui = LocalPlayer:FindFirstChild("PlayerGui")
+	end
+
 	killsFrame = Instance.new("Frame")
 	killsFrame.Size = UDim2.new(0, 160, 0, 30)
 	killsFrame.Position = UDim2.new(0, 10, 0, 50)
 	killsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 	killsFrame.BorderSizePixel = 0
 	killsFrame.Name = "KillsGui"
-	killsFrame.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+	killsFrame.Parent = playerGui
 
 	local killsText = Instance.new("TextLabel")
 	killsText.Size = UDim2.new(1, 0, 1, 0)
