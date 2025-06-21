@@ -189,6 +189,10 @@ local killsGuiRunning = false
 local killsFrame
 local killsConnection
 
+local killsGuiRunning = false
+local killsFrame
+local killsConnection
+
 Player:AddButton("Show Kills Gui", function()
 	if killsGuiRunning then return end
 	killsGuiRunning = true
@@ -199,7 +203,8 @@ Player:AddButton("Show Kills Gui", function()
 	killsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
 	killsFrame.BorderSizePixel = 0
 	killsFrame.Name = "KillsGui"
-	killsFrame.Parent = game:GetService("CoreGui")
+	killsFrame.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
 	local killsText = Instance.new("TextLabel")
 	killsText.Size = UDim2.new(1, 0, 1, 0)
 	killsText.BackgroundTransparency = 1
@@ -218,4 +223,17 @@ Player:AddButton("Show Kills Gui", function()
 			task.wait(0.2)
 		end
 	end)
+end)
+
+Player:AddButton("Hide Kills Gui", function()
+	if killsFrame then
+		killsFrame:Destroy()
+		killsFrame = nil
+	end
+
+	if killsConnection then
+		killsConnection = nil
+	end
+
+	killsGuiRunning = false
 end)
