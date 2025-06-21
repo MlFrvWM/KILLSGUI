@@ -1,7 +1,7 @@
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/memejames/elerium-v2-ui-library//main/Library", true))()
 
 local window = library:AddWindow("Sad Private", {
-    main_color = Color3.fromRGB(150, 150, 149),
+    main_color = Color3.fromRGB(140, 140, 136),
     min_size = Vector2.new(740, 500),
     can_resize = false,
 })
@@ -185,47 +185,48 @@ timeDropdown:Add("Midnight")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local killsGuiRunning = false
-local killsFrame
-local killsConnection
+local killsShown = false
+local killsGui = nil
 
 Player:AddButton("Show Kills Gui", function()
-	if killsGuiRunning then return end
-	killsGuiRunning = true
+    killsShown = not killsShown
 
-	local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
-	if not playerGui then
-		repeat task.wait() until LocalPlayer:FindFirstChild("PlayerGui")
-		playerGui = LocalPlayer:FindFirstChild("PlayerGui")
-	end
+    if killsShown then
+        killsGui = Instance.new("BillboardGui")
+        killsGui.Name = "KillsGui"
+        killsGui.Adornee = LocalPlayer.Character:WaitForChild("Head")
+        killsGui.Size = UDim2.new(0, 200, 0, 50)
+        killsGui.StudsOffset = Vector3.new(0, 2, 0)
+        killsGui.AlwaysOnTop = true
+        killsGui.Parent = LocalPlayer.Character
 
-	killsFrame = Instance.new("Frame")
-	killsFrame.Size = UDim2.new(0, 160, 0, 30)
-	killsFrame.Position = UDim2.new(0, 10, 0, 50)
-	killsFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-	killsFrame.BorderSizePixel = 0
-	killsFrame.Name = "KillsGui"
-	killsFrame.Parent = playerGui
+        local killsText = Instance.new("TextLabel")
+        killsText.Name = "KillsLabel"
+        killsText.Size = UDim2.new(1, 0, 1, 0)
+        killsText.BackgroundTransparency = 1
+        killsText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        killsText.TextScaled = true
+        killsText.Font = Enum.Font.SourceSansBold
+        killsText.Parent = killsGui
 
-	local killsText = Instance.new("TextLabel")
-	killsText.Size = UDim2.new(1, 0, 1, 0)
-	killsText.BackgroundTransparency = 1
-	killsText.TextColor3 = Color3.fromRGB(255, 255, 255)
-	killsText.Font = Enum.Font.SourceSansBold
-	killsText.TextScaled = true
-	killsText.Text = "Kills: ..."
-	killsText.Parent = killsFrame
-
-	killsConnection = task.spawn(function()
-		while killsGuiRunning and killsText do
-			local stats = LocalPlayer:FindFirstChild("leaderstats")
-			local kills = stats and stats:FindFirstChild("Kills")
-			local value = kills and kills.Value or 0
-			killsText.Text = "Kills: " .. tostring(value)
-			task.wait(0.2)
-		end
-	end)
-end)
+        task.spawn(function()
+            while killsGui and killsGui.Parent and killsShown do
+                local kills = LocalPlayer.leaderstats:FindFirstChild("Kills")
+                if kills then
+                    killsText.Text = "Kills: " .. tostring(kills.Value)
+                else
+                    killsText.Text = "Kills: N/A"
+                end
+                task.wait(0.5)
+            end
+        end)
+    else
+        if killsGui then
+            killsGui:Destroy()
+            killsGui = nil
+        end
+    end
+end):Set("TextColor3", Color3.fromRGB(0, 0, 0))
 
 Player:AddButton("Hide Kills Gui", function()
 	if killsFrame then
