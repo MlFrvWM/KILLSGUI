@@ -189,10 +189,6 @@ local killsGuiRunning = false
 local killsFrame
 local killsConnection
 
-local killsGuiRunning = false
-local killsFrame
-local killsConnection
-
 Player:AddButton("Show Kills Gui", function()
 	if killsGuiRunning then return end
 	killsGuiRunning = true
