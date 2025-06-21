@@ -184,46 +184,53 @@ timeDropdown:Add("Midnight")
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 local killsShown = false
-local killsGui = nil
+local screenGui = nil
 
 Player:AddButton("Show Kills Gui", function()
     killsShown = not killsShown
 
     if killsShown then
-        killsGui = Instance.new("BillboardGui")
-        killsGui.Name = "KillsGui"
-        killsGui.Adornee = LocalPlayer.Character:WaitForChild("Head")
-        killsGui.Size = UDim2.new(0, 200, 0, 50)
-        killsGui.StudsOffset = Vector3.new(0, 2, 0)
-        killsGui.AlwaysOnTop = true
-        killsGui.Parent = LocalPlayer.Character
+        screenGui = Instance.new("ScreenGui")
+        screenGui.Name = "KillsScreenGui"
+        screenGui.ResetOnSpawn = false
+        screenGui.Parent = PlayerGui
 
-        local killsText = Instance.new("TextLabel")
-        killsText.Name = "KillsLabel"
-        killsText.Size = UDim2.new(1, 0, 1, 0)
-        killsText.BackgroundTransparency = 1
-        killsText.TextColor3 = Color3.fromRGB(255, 255, 255)
-        killsText.TextScaled = true
-        killsText.Font = Enum.Font.SourceSansBold
-        killsText.Parent = killsGui
+        local frame = Instance.new("Frame")
+        frame.Size = UDim2.new(0, 150, 0, 40)
+        frame.Position = UDim2.new(0.5, -75, 0.1, 0)
+        frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        frame.BorderSizePixel = 0
+        frame.Active = true
+        frame.Draggable = true
+        frame.Parent = screenGui
+
+        local textLabel = Instance.new("TextLabel")
+        textLabel.Size = UDim2.new(1, 0, 1, 0)
+        textLabel.BackgroundTransparency = 1
+        textLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        textLabel.TextScaled = true
+        textLabel.Font = Enum.Font.SourceSansBold
+        textLabel.Text = "Kills: carregando..."
+        textLabel.Parent = frame
 
         task.spawn(function()
-            while killsGui and killsGui.Parent and killsShown do
-                local kills = LocalPlayer.leaderstats:FindFirstChild("Kills")
+            while killsShown and screenGui and screenGui.Parent do
+                local kills = LocalPlayer:FindFirstChild("leaderstats") and LocalPlayer.leaderstats:FindFirstChild("Kills")
                 if kills then
-                    killsText.Text = "Kills: " .. tostring(kills.Value)
+                    textLabel.Text = "Kills: " .. tostring(kills.Value)
                 else
-                    killsText.Text = "Kills: N/A"
+                    textLabel.Text = "Kills: N/A"
                 end
                 task.wait(0.5)
             end
         end)
     else
-        if killsGui then
-            killsGui:Destroy()
-            killsGui = nil
+        if screenGui then
+            screenGui:Destroy()
+            screenGui = nil
         end
     end
 end):Set("TextColor3", Color3.fromRGB(0, 0, 0))
